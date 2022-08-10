@@ -30,9 +30,13 @@ const displayController = (() => {
   const modifyTile = function (tileNum, tile) {
     const modifyTile = document.querySelector(`.tile[data-tilenum="${tileNum}"]`);
     console.log(modifyTile);
-    if (tile == "1") {
+    if (tile == "1" && modifyTile.textContent != "X") {
       modifyTile.textContent = "X";
       modifyTile.classList.add('fadein');
+      modifyTile.addEventListener('animationend', function () { modifyTile.classList.remove('fadein') });
+    } else {
+      modifyTile.classList.add('error');
+      modifyTile.addEventListener('animationend', function () { modifyTile.classList.remove('error') });
     }
   }
   return { createDisplay, modifyTile };

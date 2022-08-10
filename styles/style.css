@@ -47,6 +47,27 @@ body {
 }
 
 @keyframes fadein {
-  from {opacity: 0};
-  to {opacity: 100};
+  from {
+    opacity: 0
+  }
+
+  to {
+    opacity: 100
+  }
+
+}
+
+.error {
+  animation: error 1s backwards;
+}
+
+@keyframes error {
+  from {
+    background-color: red;
+  }
+
+  to {
+    background-color: white;
+  }
+
 }
