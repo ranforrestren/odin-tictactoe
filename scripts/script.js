@@ -4,6 +4,7 @@ const gameBoard = (() => {
   const getBoard = () => _board;
   const applyMark = function (tileNum) {
     _board[tileNum] = 1;
+    displayController.modifyTile(tileNum, _board[tileNum]);
   }
   return { getBoard, applyMark };
 })();
@@ -11,33 +12,38 @@ const gameBoard = (() => {
 // object responsible for rendering board state to page
 const displayController = (() => {
   const _display = document.querySelector('#board');
-  const renderDisplay = function (board) {
-    // clear current board
-    _display.replaceChildren();
-    // replace with new board
+  const createDisplay = function (board) {
     for (const [tileNum, tile] of board.entries()) {
       _createTile(tileNum, tile);
     }
   }
   const _createTile = function (tileNum, tile) {
+    const tileContainer = document.createElement('div');
     const newTile = document.createElement('div');
+    tileContainer.classList.add('tileContainer');
     newTile.classList.add('tile');
-    if (tile == "1") {
-      newTile.textContent = "X";
-    }
-    newTile.addEventListener('click', function () { logicController.mark(tileNum) });
-    _display.appendChild(newTile);
+    newTile.setAttribute('data-tilenum', `${tileNum}`);
+    newTile.addEventListener('click', function () { logicController.applyMark(tileNum) });
+    _display.appendChild(tileContainer);
+    tileContainer.appendChild(newTile);
   }
-  return { renderDisplay };
+  const modifyTile = function (tileNum, tile) {
+    const modifyTile = document.querySelector(`.tile[data-tilenum="${tileNum}"]`);
+    console.log(modifyTile);
+    if (tile == "1") {
+      modifyTile.textContent = "X";
+      modifyTile.classList.add('fadein');
+    }
+  }
+  return { createDisplay, modifyTile };
 })();
 
 // object responsible for controlling game logic
 const logicController = (() => {
-  const mark = function (tileNum) {
+  const applyMark = function (tileNum) {
     gameBoard.applyMark(tileNum);
-    displayController.renderDisplay(gameBoard.getBoard());
   }
-  return { mark };
+  return { applyMark };
 })();
 
-displayController.renderDisplay(gameBoard.getBoard());
+displayController.createDisplay(gameBoard.getBoard());
