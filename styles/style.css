@@ -1,6 +1,7 @@
 body {
   display: flex;
   height: 100vh;
+  font-family: Garamond, serif;
 }
 
 #container {
@@ -14,9 +15,8 @@ body {
 }
 
 #title {
-  font-size: 2rem;
+  font-size: 4rem;
   place-self: center;
-  font-weight: 600;
 }
 
 #board {
