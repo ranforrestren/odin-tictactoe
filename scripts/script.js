@@ -22,6 +22,9 @@ const displayController = (() => {
   const _createTile = function (tileNum, tile) {
     const newTile = document.createElement('div');
     newTile.classList.add('tile');
+    if (tile == "1") {
+      newTile.textContent = "X";
+    }
     newTile.addEventListener('click', function () { logicController.mark(tileNum) });
     _display.appendChild(newTile);
   }

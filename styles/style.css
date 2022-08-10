@@ -31,5 +31,9 @@ body {
 }
 
 .tile {
+  display: grid;
+  place-items: center;
   border: 1px solid black;
+  font-size: 3rem;
+  user-select: none;
 }
