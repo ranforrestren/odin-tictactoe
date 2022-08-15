@@ -18,9 +18,8 @@ const displayController = (() => {
   const _display = document.querySelector('#board');
   const createDisplay = function (board) {
     for (const [rowNum, row] of board.entries()) {
-      console.log(row);
       for (const [columnNum] of row.entries())
-      _createTile(rowNum, columnNum);
+        _createTile(rowNum, columnNum);
     }
   }
   const _createTile = function (rowNum, columnNum) {
@@ -36,7 +35,6 @@ const displayController = (() => {
   }
   const modifyTile = function (rowNum, columnNum, tile, currPlayer) {
     const modifyTile = document.querySelector(`.tile[data-rownum="${rowNum}"][data-columnnum="${columnNum}"]`);
-    console.log(modifyTile);
     if (tile != "0" && modifyTile.textContent == "") {
       modifyTile.textContent = currPlayer;
       modifyTile.classList.add('fadein');
@@ -45,18 +43,41 @@ const displayController = (() => {
       modifyTile.classList.add('error');
       modifyTile.addEventListener('animationend', function () { modifyTile.classList.remove('error') });
     }
+    logicController.checkWinner(rowNum, columnNum, gameBoard.getBoard(), currPlayer);
   }
   return { createDisplay, modifyTile };
 })();
 
 // object responsible for controlling game logic
 const logicController = (() => {
-  let currPlayer = "X";
+  let _currPlayer = "X";
   const applyMark = function (rowNum, columnNum) {
-    gameBoard.applyMark(rowNum, columnNum, currPlayer);
-    currPlayer === "X" ? currPlayer = "O" : currPlayer = "X";
+    gameBoard.applyMark(rowNum, columnNum, _currPlayer);
+    _currPlayer === "X" ? _currPlayer = "O" : _currPlayer = "X";
   }
-  return { applyMark };
+  const checkWinner = function (rowNum, columnNum, board, currPlayer) {
+    // takes rowNum and checks for row win
+    if (board[rowNum][0] == board[rowNum][1] && board[rowNum][0] == board[rowNum][2]) {
+      _alertWinner(currPlayer);
+    }
+    // takes columnNum and checks for column win
+    if (board[0][columnNum] == board[1][columnNum] && board[0][columnNum] == board[2][columnNum]) {
+      _alertWinner(currPlayer);
+    }
+    // checks diagonals and checks for diagonal win
+    if (board[1][1] == currPlayer) {
+      if (board[0][0] == board[1][1] && board[0][0] == board[2][2]) {
+        _alertWinner(currPlayer);
+      }
+      if (board[2][0] == board[1][1] && board[2][0] == board[0][2]) {
+        _alertWinner(currPlayer);
+      }
+    }
+  }
+  const _alertWinner = function (currPlayer) {
+    alert(`The Winner is ${currPlayer}!`);
+  }
+  return { applyMark, checkWinner };
 })();
 
 // factory for creating player objects
