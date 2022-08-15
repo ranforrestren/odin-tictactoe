@@ -1,10 +1,14 @@
 // object responsible for handling board state
 const gameBoard = (() => {
-  const _board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const _board = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0]
+  ];
   const getBoard = () => _board;
-  const applyMark = function (tileNum, currPlayer) {
-    _board[tileNum] = 1;
-    displayController.modifyTile(tileNum, _board[tileNum], currPlayer);
+  const applyMark = function (rowNum, columnNum, currPlayer) {
+    _board[rowNum][columnNum] = currPlayer;
+    displayController.modifyTile(rowNum, columnNum, _board[rowNum][columnNum], currPlayer);
   }
   return { getBoard, applyMark };
 })();
@@ -13,24 +17,27 @@ const gameBoard = (() => {
 const displayController = (() => {
   const _display = document.querySelector('#board');
   const createDisplay = function (board) {
-    for (const [tileNum] of board.entries()) {
-      _createTile(tileNum);
+    for (const [rowNum, row] of board.entries()) {
+      console.log(row);
+      for (const [columnNum] of row.entries())
+      _createTile(rowNum, columnNum);
     }
   }
-  const _createTile = function (tileNum) {
+  const _createTile = function (rowNum, columnNum) {
     const tileContainer = document.createElement('div');
     const newTile = document.createElement('div');
     tileContainer.classList.add('tileContainer');
     newTile.classList.add('tile');
-    newTile.setAttribute('data-tilenum', `${tileNum}`);
-    newTile.addEventListener('click', function () { logicController.applyMark(tileNum) });
+    newTile.setAttribute('data-rownum', `${rowNum}`);
+    newTile.setAttribute('data-columnnum', `${columnNum}`);
+    newTile.addEventListener('click', function () { logicController.applyMark(rowNum, columnNum) });
     _display.appendChild(tileContainer);
     tileContainer.appendChild(newTile);
   }
-  const modifyTile = function (tileNum, tile, currPlayer) {
-    const modifyTile = document.querySelector(`.tile[data-tilenum="${tileNum}"]`);
+  const modifyTile = function (rowNum, columnNum, tile, currPlayer) {
+    const modifyTile = document.querySelector(`.tile[data-rownum="${rowNum}"][data-columnnum="${columnNum}"]`);
     console.log(modifyTile);
-    if (tile == "1" && modifyTile.textContent == "") {
+    if (tile != "0" && modifyTile.textContent == "") {
       modifyTile.textContent = currPlayer;
       modifyTile.classList.add('fadein');
       modifyTile.addEventListener('animationend', function () { modifyTile.classList.remove('fadein') });
@@ -45,8 +52,8 @@ const displayController = (() => {
 // object responsible for controlling game logic
 const logicController = (() => {
   let currPlayer = "X";
-  const applyMark = function (tileNum) {
-    gameBoard.applyMark(tileNum, currPlayer);
+  const applyMark = function (rowNum, columnNum) {
+    gameBoard.applyMark(rowNum, columnNum, currPlayer);
     currPlayer === "X" ? currPlayer = "O" : currPlayer = "X";
   }
   return { applyMark };
