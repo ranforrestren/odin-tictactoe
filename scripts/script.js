@@ -2,9 +2,9 @@
 const gameBoard = (() => {
   const _board = [0, 0, 0, 0, 0, 0, 0, 0, 0];
   const getBoard = () => _board;
-  const applyMark = function (tileNum) {
+  const applyMark = function (tileNum, currPlayer) {
     _board[tileNum] = 1;
-    displayController.modifyTile(tileNum, _board[tileNum]);
+    displayController.modifyTile(tileNum, _board[tileNum], currPlayer);
   }
   return { getBoard, applyMark };
 })();
@@ -13,11 +13,11 @@ const gameBoard = (() => {
 const displayController = (() => {
   const _display = document.querySelector('#board');
   const createDisplay = function (board) {
-    for (const [tileNum, tile] of board.entries()) {
-      _createTile(tileNum, tile);
+    for (const [tileNum] of board.entries()) {
+      _createTile(tileNum);
     }
   }
-  const _createTile = function (tileNum, tile) {
+  const _createTile = function (tileNum) {
     const tileContainer = document.createElement('div');
     const newTile = document.createElement('div');
     tileContainer.classList.add('tileContainer');
@@ -27,11 +27,11 @@ const displayController = (() => {
     _display.appendChild(tileContainer);
     tileContainer.appendChild(newTile);
   }
-  const modifyTile = function (tileNum, tile) {
+  const modifyTile = function (tileNum, tile, currPlayer) {
     const modifyTile = document.querySelector(`.tile[data-tilenum="${tileNum}"]`);
     console.log(modifyTile);
-    if (tile == "1" && modifyTile.textContent != "X") {
-      modifyTile.textContent = "X";
+    if (tile == "1" && modifyTile.textContent == "") {
+      modifyTile.textContent = currPlayer;
       modifyTile.classList.add('fadein');
       modifyTile.addEventListener('animationend', function () { modifyTile.classList.remove('fadein') });
     } else {
@@ -44,10 +44,17 @@ const displayController = (() => {
 
 // object responsible for controlling game logic
 const logicController = (() => {
+  let currPlayer = "X";
   const applyMark = function (tileNum) {
-    gameBoard.applyMark(tileNum);
+    gameBoard.applyMark(tileNum, currPlayer);
+    currPlayer === "X" ? currPlayer = "O" : currPlayer = "X";
   }
   return { applyMark };
 })();
+
+// factory for creating player objects
+const playerFactory = (name, playerID) => {
+  return { name };
+}
 
 displayController.createDisplay(gameBoard.getBoard());
