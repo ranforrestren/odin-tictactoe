@@ -46,6 +46,14 @@ body {
   animation: fadein 1s forwards;
 }
 
+.error {
+  animation: error 1s backwards;
+}
+
+.victory {
+  animation: victory 0.4s 6 alternate;
+}
+
 @keyframes fadein {
   from {
     opacity: 0
@@ -57,10 +65,6 @@ body {
 
 }
 
-.error {
-  animation: error 1s backwards;
-}
-
 @keyframes error {
   from {
     background-color: red;
@@ -68,6 +72,17 @@ body {
 
   to {
     background-color: white;
+  }
+
+}
+
+@keyframes victory {
+  from {
+    background-color: white;
+  }
+
+  to {
+    background-color: greenyellow;
   }
 
 }
