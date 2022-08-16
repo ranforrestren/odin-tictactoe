@@ -7,10 +7,15 @@ const gameBoard = (() => {
   ];
   const getBoard = () => _board;
   const applyMark = function (rowNum, columnNum, currPlayer) {
-    if (_board[rowNum][columnNum] == "0") {
-    _board[rowNum][columnNum] = currPlayer;
+    if (logicController.getState() === "play") {
+      let legalMove = false;
+      if (_board[rowNum][columnNum] == "0") {
+        _board[rowNum][columnNum] = currPlayer;
+        legalMove = true;
+      }
+      displayController.modifyTile(rowNum, columnNum, _board[rowNum][columnNum], currPlayer);
+      return legalMove;
     }
-    displayController.modifyTile(rowNum, columnNum, _board[rowNum][columnNum], currPlayer);
   }
   return { getBoard, applyMark };
 })();
@@ -71,7 +76,7 @@ const displayController = (() => {
         for (tiles of victoryTiles) {
           tiles.classList.add('victory');
         }
-      } else if (winPos === "1") {
+      } else if (winPos === 1) {
         const victoryTiles = [
           document.querySelector(`.tile[data-rownum="0"][data-columnnum="2"]`),
           document.querySelector(`.tile[data-rownum="1"][data-columnnum="1"]`),
@@ -91,8 +96,10 @@ const logicController = (() => {
   let _currPlayer = "X";
   let _gameState = "play";
   const applyMark = function (rowNum, columnNum) {
-    gameBoard.applyMark(rowNum, columnNum, _currPlayer);
-    _currPlayer === "X" ? _currPlayer = "O" : _currPlayer = "X";
+    // attempts to play turn and changes turn if legal move
+    if (gameBoard.applyMark(rowNum, columnNum, _currPlayer) === true) {
+      _currPlayer === "X" ? _currPlayer = "O" : _currPlayer = "X";
+    }
   }
   const checkWinner = function (rowNum, columnNum, board, currPlayer) {
     // takes rowNum and checks for row win
@@ -129,7 +136,10 @@ const logicController = (() => {
       _gameState = "draw";
     }
   }
-  return { applyMark, checkWinner };
+  const getState = function () {
+    return _gameState;
+  }
+  return { applyMark, checkWinner, getState };
 })();
 
 // factory for creating player objects
