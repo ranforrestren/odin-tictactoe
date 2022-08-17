@@ -1,5 +1,6 @@
 body {
-  display: flex;
+  display: grid;
+  place-items: center;
   height: 100vh;
   font-family: Garamond, serif;
 }
@@ -8,7 +9,6 @@ body {
   display: grid;
   grid-template: 130px 358px 162px / 1fr;
   justify-items: center;
-  margin: auto;
   min-height: 650px;
   width: 450px;
   border: 3px solid black;
@@ -43,6 +43,10 @@ body {
   font-family: Garamond, serif;
 }
 
+#winner {
+  font-size: 4rem;
+}
+
 .tileContainer {
   border: 1px solid black;
   font-size: 3rem;
@@ -56,15 +60,15 @@ body {
 }
 
 .fadein {
-  animation: fadein 1s forwards;
+  animation: fadein 1s;
 }
 
 .error {
-  animation: error 1s backwards;
+  animation: error 1s;
 }
 
 .victory {
-  animation: victory 0.4s 6 alternate;
+  animation: victory 0.4s 7 alternate forwards;
 }
 
 @keyframes fadein {

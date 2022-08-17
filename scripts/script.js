@@ -5,6 +5,13 @@ const gameBoard = (() => {
     [0, 0, 0],
     [0, 0, 0]
   ];
+  const refreshBoard = function () {
+    for (const [i, row] of _board.entries()) {
+      for (const v of row.keys()) {
+        _board[i][v] = 0;
+      }
+    }
+  }
   const getBoard = () => _board;
   const applyMark = function (rowNum, columnNum, currPlayer) {
     if (logicController.getState() === "play") {
@@ -17,7 +24,7 @@ const gameBoard = (() => {
       return legalMove;
     }
   }
-  return { getBoard, applyMark };
+  return { refreshBoard, getBoard, applyMark };
 })();
 
 // factory for creating player objects
@@ -29,6 +36,7 @@ const playerFactory = (playerName, playerID) => {
 const displayController = (() => {
   const _display = document.querySelector('#board');
   const createDisplay = function (board) {
+    _display.replaceChildren();
     for (const [rowNum, row] of board.entries()) {
       for (const [columnNum] of row.entries())
         _createTile(rowNum, columnNum);
@@ -100,10 +108,17 @@ const displayController = (() => {
 const logicController = (() => {
   let _currPlayer = "X";
   let _gameState = "initial";
+  const _winner = document.querySelector("#winner");
   const player1 = playerFactory("default1");
   const player2 = playerFactory("default2");
   const startGame = function (state) {
-    _gameState = state;
+    if (_gameState != "play") {
+      _currPlayer = "X";
+      _gameState = state;
+      _winner.textContent = "";
+      gameBoard.refreshBoard();
+      displayController.createDisplay(gameBoard.getBoard());
+    }
     player1.name = document.querySelector("#player1Name").value;
     player2.name = document.querySelector("#player2Name").value;
   };
@@ -113,6 +128,7 @@ const logicController = (() => {
       _currPlayer === "X" ? _currPlayer = "O" : _currPlayer = "X";
     }
   }
+
   const checkWinner = function (rowNum, columnNum, board) {
     const winnerName = (_currPlayer === "X" ? player1.name : player2.name);
     // takes rowNum and checks for row win
@@ -140,14 +156,16 @@ const logicController = (() => {
   const _alertWinner = function (winnerName, winType, winPos) {
     if (_gameState === "play") {
       _gameState = "won";
-      alert(`${winnerName} has won!`)
       displayController.displayWin(winType, winPos);
+      _winner.textContent = `${winnerName} has won!`;
+      playButton.changeText("restart?");
     }
   }
   const _alertDraw = function () {
     if (_gameState === "play") {
       _gameState = "draw";
-      alert(`Draw!`);
+      document.querySelector("#winner").textContent = `Draw!`;
+      playButton.changeText("restart?");
     }
   }
   const getState = function () {
@@ -162,6 +180,10 @@ const playButton = (() => {
   _button.addEventListener('click', () => {
     logicController.startGame("play");
   });
+  const changeText = function (text) {
+    _button.textContent = text;
+  }
+  return { changeText }
 })();
 
 displayController.createDisplay(gameBoard.getBoard());
