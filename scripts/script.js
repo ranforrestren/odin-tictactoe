@@ -20,6 +20,11 @@ const gameBoard = (() => {
   return { getBoard, applyMark };
 })();
 
+// factory for creating player objects
+const playerFactory = (playerName, playerID) => {
+  return { playerName, playerID };
+}
+
 // object responsible for rendering board state to page
 const displayController = (() => {
   const _display = document.querySelector('#board');
@@ -51,7 +56,7 @@ const displayController = (() => {
       modifyTile.classList.add('error');
       modifyTile.addEventListener('animationend', function () { modifyTile.classList.remove('error') });
     }
-    logicController.checkWinner(rowNum, columnNum, gameBoard.getBoard(), currPlayer);
+    logicController.checkWinner(rowNum, columnNum, gameBoard.getBoard());
   }
   const displayWin = function (winType, winPos) {
     if (winType === "hori") {
@@ -94,29 +99,37 @@ const displayController = (() => {
 // object responsible for controlling game logic
 const logicController = (() => {
   let _currPlayer = "X";
-  let _gameState = "play";
+  let _gameState = "initial";
+  const player1 = playerFactory("default1");
+  const player2 = playerFactory("default2");
+  const startGame = function (state) {
+    _gameState = state;
+    player1.name = document.querySelector("#player1Name").value;
+    player2.name = document.querySelector("#player2Name").value;
+  };
   const applyMark = function (rowNum, columnNum) {
     // attempts to play turn and changes turn if legal move
     if (gameBoard.applyMark(rowNum, columnNum, _currPlayer) === true) {
       _currPlayer === "X" ? _currPlayer = "O" : _currPlayer = "X";
     }
   }
-  const checkWinner = function (rowNum, columnNum, board, currPlayer) {
+  const checkWinner = function (rowNum, columnNum, board) {
+    const winnerName = (_currPlayer === "X" ? player1.name : player2.name);
     // takes rowNum and checks for row win
     if (board[rowNum][0] == board[rowNum][1] && board[rowNum][0] == board[rowNum][2]) {
-      _alertWinner(currPlayer, "hori", rowNum);
+      _alertWinner(winnerName, "hori", rowNum);
     }
     // takes columnNum and checks for column win
     if (board[0][columnNum] == board[1][columnNum] && board[0][columnNum] == board[2][columnNum]) {
-      _alertWinner(currPlayer, "vert", columnNum);
+      _alertWinner(winnerName, "vert", columnNum);
     }
     // checks diagonals and checks for diagonal win
-    if (board[1][1] == currPlayer) {
+    if (board[1][1] == _currPlayer) {
       if (board[0][0] == board[1][1] && board[0][0] == board[2][2]) {
-        _alertWinner(currPlayer, "diag", 0);
+        _alertWinner(winnerName, "diag", 0);
       }
       if (board[2][0] == board[1][1] && board[2][0] == board[0][2]) {
-        _alertWinner(currPlayer, "diag", 1);
+        _alertWinner(winnerName, "diag", 1);
       }
     }
     // checks for tie
@@ -124,27 +137,31 @@ const logicController = (() => {
       _alertDraw();
     }
   }
-  const _alertWinner = function (currPlayer, winType, winPos) {
+  const _alertWinner = function (winnerName, winType, winPos) {
     if (_gameState === "play") {
       _gameState = "won";
+      alert(`${winnerName} has won!`)
       displayController.displayWin(winType, winPos);
     }
   }
   const _alertDraw = function () {
     if (_gameState === "play") {
-      alert(`Draw!`);
       _gameState = "draw";
+      alert(`Draw!`);
     }
   }
   const getState = function () {
     return _gameState;
   }
-  return { applyMark, checkWinner, getState };
+  return { startGame, applyMark, checkWinner, getState };
 })();
 
-// factory for creating player objects
-const playerFactory = (name, playerID) => {
-  return { name };
-}
+// object for play button
+const playButton = (() => {
+  const _button = document.querySelector("button");
+  _button.addEventListener('click', () => {
+    logicController.startGame("play");
+  });
+})();
 
 displayController.createDisplay(gameBoard.getBoard());
