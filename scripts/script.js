@@ -116,6 +116,7 @@ const logicController = (() => {
       _currPlayer = "X";
       _gameState = state;
       _winner.textContent = "";
+      playButton.changeText("play");
       gameBoard.refreshBoard();
       displayController.createDisplay(gameBoard.getBoard());
     }
